@@ -1,6 +1,7 @@
 import fitz  # PyMuPDF for extracting pages
 import time
 import os
+import sys
 import keyboard  # Detects when "C" is pressed
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -9,10 +10,19 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import sys
 
 # Define how long each pair of pages is displayed (in seconds)
-DISPLAY_TIME = 10  # Change this value easily
+DISPLAY_TIME = 120  # Change this value easily
+
+# Function to get the correct path for `viewer.html`
+def get_viewer_path():
+    if getattr(sys, 'frozen', False):
+        # Running as an .exe with PyInstaller
+        base_path = sys._MEIPASS
+    else:
+        # Running as a normal Python script
+        base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_path, "viewer.html")
 
 # 1. Configure Selenium with WebDriver Manager
 chrome_options = Options()
@@ -20,6 +30,9 @@ chrome_options.add_argument("--start-maximized")  # Open full screen
 chrome_options.add_argument("--disable-infobars")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--no-sandbox")
+
+# 2. Move Chrome to a specific display (HDMI monitor)
+chrome_options.add_argument("--window-position=1920,0")  # Adjust based on your HDMI screen position
 
 # Use WebDriver Manager to auto-install the correct ChromeDriver
 service = Service(ChromeDriverManager().install())
@@ -48,9 +61,13 @@ pairs = [(image_files[i], image_files[i+1] if i+1 < len(image_files) else "")
          for i in range(0, len(image_files), 2)]
 
 # 4. Open the existing `viewer.html`
-html_path = os.path.abspath("viewer.html")  # Ensure it's an absolute path
-print(f"Opening HTML file: {html_path}")
-driver.get(f"file://{html_path}")
+html_path = get_viewer_path()
+if not os.path.exists(html_path):
+    print(f"❌ ERROR: viewer.html not found at {html_path}")
+    sys.exit()
+
+print(f"✅ Loading viewer.html from {html_path}")
+driver.get(f"file:///{html_path.replace('\\', '/')}")
 
 # Wait until the images are present
 try:
@@ -81,7 +98,7 @@ while not keyboard.is_pressed('c'):
 
         # Update images in the HTML using JavaScript
         print(f"🔄 Displaying: {img1_path} and {img2_path}")
-        driver.execute_script(f"updateImages('file://{img1_path}', 'file://{img2_path}')")
+        driver.execute_script(f"updateImages('file:///{img1_path}', 'file:///{img2_path}')")
         time.sleep(DISPLAY_TIME)
 
         if keyboard.is_pressed('c'):
@@ -91,3 +108,4 @@ while not keyboard.is_pressed('c'):
 # Close the browser after stopping
 print("✅ Finished displaying images.")
 driver.quit()
+sys.exit()
