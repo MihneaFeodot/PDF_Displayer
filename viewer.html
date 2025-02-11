@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Viewer</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            background-color: black;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            width: 90%;
+            height: 90%;
+            justify-content: center;
+            gap: 10px;
+        }
+        img {
+            max-width: 50%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img id="pdf-image1" src="" alt="PDF Page 1">
+        <img id="pdf-image2" src="" alt="PDF Page 2">
+    </div>
+    <script>
+        function updateImages(src1, src2) {
+            document.getElementById("pdf-image1").src = src1;
+            document.getElementById("pdf-image2").src = src2;
+        }
+    </script>
+</body>
+</html>
