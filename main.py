@@ -1,4 +1,4 @@
-import fitz  # PyMuPDF for extracting pages
+import fitz  # PyMuPDF
 import time
 import os
 import sys
@@ -12,7 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # Define how long each pair of pages is displayed (in seconds)
-DISPLAY_TIME = 60  # Now set to 1 minute
+DISPLAY_TIME = 60  # 1-minute display per slide
 
 # Function to get the correct path for `viewer.html`
 def get_viewer_path():
@@ -20,12 +20,12 @@ def get_viewer_path():
         base_path = sys._MEIPASS  # Running as an .exe with PyInstaller
     else:
         base_path = os.path.dirname(os.path.abspath(__file__))  # Normal Python script
-    return os.path.join(base_path, "viewer.html")
+    return os.path.join(base_path, "pdf_viewer_more_zoomed_preview.html")
 
 # Configure Selenium with WebDriver Manager
 chrome_options = Options()
 chrome_options.add_argument("--window-size=1024,768")  # Ensure correct display size
-chrome_options.add_argument("--window-position=1033,0")  # Move to HDMI display (adjust if needed)
+chrome_options.add_argument("--window-position=1920,0")  # Move to HDMI display (adjust if needed)
 chrome_options.add_argument("--disable-infobars")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--no-sandbox")
